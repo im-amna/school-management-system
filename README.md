@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# EduManage — School Management System
 
-## Getting Started
+A full-stack school management system built with Next.js, TypeScript, Prisma ORM, and PostgreSQL.
 
-First, run the development server:
+## 🔗 Links
+- **Live Demo:** [your-vercel-url-here]
+- **GitHub:** [your-github-url-here]
+
+## 👤 Demo Credentials
+
+| Role    | Email                      | Password     |
+|---------|----------------------------|--------------|
+| Admin   | admin@school.com           | admin123     |
+| Teacher | sarah.ahmed@school.com     | teacher123   |
+| Student | ali.khan@student.com       | student123   |
+
+## 🛠️ Tech Stack
+
+- **Frontend:** Next.js 15 (App Router), TypeScript, Tailwind CSS
+- **Backend:** Next.js API Routes (RESTful)
+- **Database:** PostgreSQL (Neon.tech) via Prisma ORM v7
+- **Auth:** NextAuth.js (JWT, Credentials Provider)
+- **UI:** Base UI (shadcn-style), Tabler Icons, Recharts
+
+## ✨ Features
+
+### Admin
+- Manage Students, Teachers, Classes (full CRUD)
+- View attendance records
+- Manage student fees (create, mark paid)
+- Dashboard with charts and analytics
+
+### Teacher
+- Mark daily attendance (Present/Absent/Late)
+- Add and manage student results
+- View assigned classes and students
+
+### Student
+- View personal attendance history
+- View results with performance analytics
+- View and print fee vouchers/receipts
+- Personal profile page
+
+### All Roles
+- Role-based authentication and route protection
+- Real-time notifications (attendance, results, fees)
+- Responsive design (mobile + desktop)
+
+## 🗄️ Database Schema
+
+6 core tables: `User`, `Student`, `Teacher`, `Class`, `Attendance`, `Result`, `Fee`, `Notification`
+
+## 🚀 Running Locally
 
 ```bash
+# Clone the repo
+git clone [your-github-url]
+cd school-management
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env
+# Add your DATABASE_URL and NEXTAUTH_SECRET
+
+# Run database migrations
+npx prisma migrate dev
+
+# Seed demo data
+npx prisma db seed
+
+# Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📁 Project Structure
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+src/
+├── app/
+│   ├── api/          # RESTful API routes
+│   ├── admin/        # Admin dashboard pages
+│   ├── teacher/      # Teacher dashboard pages
+│   └── student/      # Student dashboard pages
+├── components/       # Reusable UI components
+├── lib/              # Prisma client, auth config, helpers
+└── types/            # TypeScript type definitions
+prisma/
+├── schema.prisma     # Database schema
+└── seed.ts           # Demo data seeder
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🔐 Environment Variables
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```env
+DATABASE_URL=your_neon_postgresql_url
+NEXTAUTH_SECRET=your_secret_key
+NEXTAUTH_URL=http://localhost:3000
+```

@@ -1,0 +1,162 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  
+}
+
+// ENUMS (fixed value lists)
+
+
+// User ka role — teen types hain
+enum Role {
+  ADMIN
+  TEACHER
+  STUDENT
+}
+
+// Attendance ka status
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+}
+
+
+// MODELS (database tables)
+
+
+// User table — sab log yahan register hote hain
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(STUDENT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  student   Student?
+  teacher   Teacher?
+    notifications Notification[]
+}
+
+// Student table — User ka extended profile
+model Student {
+  id         String   @id @default(cuid())
+  rollNumber String   @unique
+  enrolledAt DateTime @default(now())
+
+  userId  String  @unique
+  classId String? // ? lagao — optional ban jayega
+  
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  class      Class?       @relation(fields: [classId], references: [id]) // Class? bhi
+  attendance Attendance[]
+  results    Result[]
+   fees        Fee[]  
+}
+// Teacher table — User ka extended profile
+model Teacher {
+  id        String   @id @default(cuid())
+  subject   String
+  joinedAt  DateTime @default(now())
+
+  // Foreign Key
+  userId String @unique
+
+  // Relations
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  classes Class[]
+}
+
+// Class table — ek class jisme students hote hain
+model Class {
+  id      String @id @default(cuid())
+  name    String // e.g. "10th Grade"
+  section String // e.g. "A"
+  year    Int    // e.g. 2024
+
+  // Foreign Key
+  teacherId String
+
+  // Relations
+  teacher    Teacher      @relation(fields: [teacherId], references: [id])
+  students   Student[]
+  attendance Attendance[]
+  results    Result[]
+}
+
+// Attendance table — 
+model Attendance {
+  id     String      @id @default(cuid())
+  date   DateTime
+  status AttendanceStatus @default(PRESENT)
+
+  // Foreign Keys
+  studentId  String
+  classId    String
+  markedById String // Teacher userId
+
+  // Relations
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  class   Class   @relation(fields: [classId], references: [id])
+}
+
+// Result table — student ke marks
+model Result {
+  id         String   @id @default(cuid())
+  subject    String
+  marks      Float
+  totalMarks Float
+  createdAt  DateTime @default(now())
+
+  // Foreign Keys
+  studentId  String
+  classId    String
+  addedById  String  // Teacher  userId
+
+  // Relations
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  class   Class   @relation(fields: [classId], references: [id])
+}
+model Fee {
+  id          String   @id @default(cuid())
+  amount      Float
+  description String
+  status      FeeStatus @default(PENDING)
+  dueDate     DateTime
+  paidAt      DateTime?
+  createdAt   DateTime @default(now())
+
+  studentId   String
+  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+enum FeeStatus {
+  PENDING
+  PAID
+  OVERDUE
+}
+
+// Notification model — alerts users about important events
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  message   String
+  type      NotificationType
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum NotificationType {
+  ATTENDANCE
+  RESULT
+  FEE
+}
