@@ -1,5 +1,4 @@
-// Yeh file NextAuth ka configuration hai
-// Yahan likhte hain ke login kaise verify hoga
+
 
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -32,7 +31,7 @@ export const authOptions: NextAuthOptions = {
           throw new Error("No user found with this email");
         }
 
-        // Step 3: Password match karo (bcrypt compare)
+        // Step 3: Password match (bcrypt compare)
         const isPasswordValid = await bcrypt.compare(
           credentials.password,
           user.password
@@ -42,7 +41,7 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Invalid password");
         }
 
-        // Step 4: Sab sahi hai — user object return karo
+        // Step 4: all correct— user object return 
         return {
           id: user.id,
           name: user.name,
@@ -53,8 +52,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
 
-  // Session ko JWT (token) mein store karenge, database mein nahi
-  // Yeh fast hai aur scalable hai
+
   session: {
     strategy: "jwt",
   },
