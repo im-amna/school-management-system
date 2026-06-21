@@ -3,8 +3,8 @@
 A full-stack school management system built with Next.js, TypeScript, Prisma ORM, and PostgreSQL.
 
 ## 🔗 Links
-- **Live Demo:** [your-vercel-url-here]
-- **GitHub:** [your-github-url-here]
+- **Live Demo:** https://school-management-system-bay-three.vercel.app
+- **GitHub:**  https://github.com/im-amna/school-management-system
 
 ## 👤 Demo Credentials
 
