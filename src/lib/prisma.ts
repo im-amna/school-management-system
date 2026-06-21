@@ -1,10 +1,9 @@
-// Yeh file Prisma Client ka "singleton" banati hai
-// Singleton matlab: poore app mein sirf EK connection use hoga, baar baar naya nahi banega
+// Prisma Client singleton — ensures only one DB connection is created across the app
 
 import { PrismaClient } from "@/generated/prisma";
 import { PrismaPg } from "@prisma/adapter-pg";
 
-// Adapter banate hain — yeh Prisma ko batata hai PostgreSQL se kaise connect karna hai
+// Adapter connects Prisma to PostgreSQL using the connection string
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL,
 });

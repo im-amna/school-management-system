@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    // Pehle teacher record dhundo session user se
+// Find teacher record linked to this user
     const teacher = await prisma.teacher.findUnique({
       where: { userId: session.user.id },
     });
@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Teacher not found" }, { status: 404 });
     }
 
-    // Is teacher ki classes ki attendance fetch karo
+   // Fetch attendance for this teacher's classes
     const attendance = await prisma.attendance.findMany({
       where: {
         class: { teacherId: teacher.id },
@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Teacher ka record dhundo
+    // Find teacher record
     const teacher = await prisma.teacher.findUnique({
       where: { userId: session.user.id },
     });
@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Teacher not found" }, { status: 404 });
     }
 
-    // Check karo yeh class is teacher ki hai
+    // Verify this class belongs to the teacher
     const cls = await prisma.class.findFirst({
       where: { id: classId, teacherId: teacher.id },
     });
@@ -96,7 +96,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Duplicate attendance check — same student, class, date
+    // Prevent duplicate attendance for same student/class/date
+
     const existing = await prisma.attendance.findFirst({
       where: {
         studentId,

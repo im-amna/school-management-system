@@ -1,6 +1,3 @@
-// Yeh API naya user register karti hai
-// POST request bhejni hogi: name, email, password, role
-
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
@@ -11,15 +8,15 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { name, email, password, role } = body;
 
-    // Step 1: Validation — sab fields aaye hain ya nahi?
+    // Validate required fields
     if (!name || !email || !password || !role) {
       return NextResponse.json(
         { error: "All fields are required" },
-        { status: 400 } // 400 = Bad Request
+        { status: 400 }
       );
     }
 
-    // Step 2: Role valid hai? (sirf ADMIN, TEACHER, STUDENT allowed)
+    // Validate role value
     if (!Object.values(Role).includes(role)) {
       return NextResponse.json(
         { error: "Invalid role" },
@@ -27,7 +24,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Step 3: Email already exist toh nahi karta?
+    // Check for duplicate email
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
@@ -35,15 +32,14 @@ export async function POST(request: NextRequest) {
     if (existingUser) {
       return NextResponse.json(
         { error: "User with this email already exists" },
-        { status: 409 } // 409 = Conflict
+        { status: 409 }
       );
     }
 
-    // Step 4: Password ko hash (encrypt) karo
-    // 10 = "salt rounds" - jitna zyada, utna secure (lekin slow bhi)
+    // Hash password before storing
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Step 5: Database mein user create karo
+    // Create user in database
     const user = await prisma.user.create({
       data: {
         name,
@@ -53,18 +49,18 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Step 6: Password kabhi response mein wapas nahi bhejte!
+    // Never return password in response
     const { password: _, ...userWithoutPassword } = user;
 
     return NextResponse.json(
       { message: "User created successfully", user: userWithoutPassword },
-      { status: 201 } // 201 = Created
+      { status: 201 }
     );
   } catch (error) {
     console.error("Registration error:", error);
     return NextResponse.json(
       { error: "Something went wrong" },
-      { status: 500 } // 500 = Server Error
+      { status: 500 }
     );
   }
 }

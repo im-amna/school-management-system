@@ -1,13 +1,10 @@
-
-
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 
 export const authOptions: NextAuthOptions = {
-  // Hum "Credentials" provider use kar rahe hain
-  // Matlab: email + password se login (Google/Facebook login nahi)
+  // Using Credentials provider — email + password login
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -15,14 +12,13 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      // Yeh function chalega jab koi login try karega
       async authorize(credentials) {
-        // Step 1: Check karo email/password diye gaye hain
+        // Validate inputs
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Email and password are required");
         }
 
-        // Step 2: Database mein user dhundo
+        // Find user in database
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
         });
@@ -31,7 +27,7 @@ export const authOptions: NextAuthOptions = {
           throw new Error("No user found with this email");
         }
 
-        // Step 3: Password match (bcrypt compare)
+        // Verify password using bcrypt
         const isPasswordValid = await bcrypt.compare(
           credentials.password,
           user.password
@@ -41,7 +37,6 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Invalid password");
         }
 
-        // Step 4: all correct— user object return 
         return {
           id: user.id,
           name: user.name,
@@ -52,17 +47,16 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
 
-
+  // Store session in JWT token (stateless, scalable)
   session: {
     strategy: "jwt",
   },
 
-  // Custom login page ka path
   pages: {
     signIn: "/login",
   },
 
-  // Yeh callbacks session/token mein extra data (role) daalte hain
+  // Attach role to JWT token and session
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
